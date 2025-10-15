@@ -7,7 +7,6 @@
 import pprint
 
 import argparse
-import igraph
 import numpy as np
 import pathlib
 import os
@@ -18,15 +17,11 @@ import time
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 
-#from utilities import timer, read_graph
+from utilities import read_graph
 
 import sys
 sys.path.append(".")
 sys.path.append("..")
-
-def read_graph( graph_path ):
-    graph = igraph.read( graph_path )
-    return graph
 
 ################################################################################
 ######################## Slice extraction utilities ############################

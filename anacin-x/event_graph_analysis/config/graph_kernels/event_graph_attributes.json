@@ -2,7 +2,9 @@
                           "event_type",
                           "logical_time",
                           "wall_time",
-                          "callstack"
+                          "callstack",
+                          "collective_type",
+                          "is_collective"
                         ],
   "edge_attributes" : [ "logical_time_latency",
                         "wall_time_latency",

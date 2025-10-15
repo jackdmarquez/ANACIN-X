@@ -3,11 +3,13 @@ import numpy as np
 from utilities import timer
 import pprint
 
-legal_vertex_labels = [ "event_type", 
-                        "logical_time", 
-                        "wall_time", 
+legal_vertex_labels = [ "event_type",
+                        "logical_time",
+                        "wall_time",
                         "callstack",
-                        "process_id"
+                        "process_id",
+                        "collective_type",
+                        "is_collective"
                       ]
 
 
