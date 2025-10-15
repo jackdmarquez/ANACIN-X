@@ -20,6 +20,9 @@ from utilities import ( timer,
                         read_graph
                       )
 
+COLLECTIVE_EVENT_TYPES = {"wait", "waitall", "waitany", "waitsome", "ibarrier"}
+TIMELINE_EVENT_TYPES = {"barrier", "send", "recv"} | COLLECTIVE_EVENT_TYPES
+
 @timer
 def visualize( graph, barrier_adjustment=False ):
     max_lts = max( graph.vs[:]["logical_time"] )
@@ -86,6 +89,11 @@ def visualize( graph, barrier_adjustment=False ):
     barrier_patches = []
     send_patches = []
     recv_patches = []
+    wait_patches = []
+    waitall_patches = []
+    waitany_patches = []
+    waitsome_patches = []
+    ibarrier_patches = []
     misc_patches = []
     x_ticks = set( [] )
     y_ticks = set( [] )
@@ -100,13 +108,28 @@ def visualize( graph, barrier_adjustment=False ):
         event_type = v["event_type"]
         if event_type == "barrier":
             patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "black" )
-            barrier_patches.append( patch ) 
+            barrier_patches.append( patch )
         elif event_type == "send":
             patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "blue" )
-            send_patches.append( patch ) 
+            send_patches.append( patch )
         elif event_type == "recv":
             patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "red" )
-            recv_patches.append( patch ) 
+            recv_patches.append( patch )
+        elif event_type == "wait":
+            patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "teal" )
+            wait_patches.append( patch )
+        elif event_type == "waitall":
+            patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "purple" )
+            waitall_patches.append( patch )
+        elif event_type == "waitany":
+            patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "orange" )
+            waitany_patches.append( patch )
+        elif event_type == "waitsome":
+            patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "brown" )
+            waitsome_patches.append( patch )
+        elif event_type == "ibarrier":
+            patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "magenta" )
+            ibarrier_patches.append( patch )
         else:
             if ( x_coord == 0 ):
                 patch = Circle( ( x_coord, y_coord ), radius = vertex_size, color = "green" )
@@ -131,9 +154,9 @@ def visualize( graph, barrier_adjustment=False ):
         #    dst_x = graph.vs[ dst_vid ][ "logical_time" ] + pid_to_offset[ dst_pid ]
         #else:
         dst_x = graph.vs[ dst_vid ][ "logical_time" ]
-        if ( event_type != "barrier" ) and ( event_type != "send" ) and ( event_type != "recv" ) and ( dst_x != 0 ):
+        if ( event_type not in TIMELINE_EVENT_TYPES ) and ( dst_x != 0 ):
             dst_x = max_lts
-        dst_y = graph.vs[ dst_vid ][ "process_id" ] 
+        dst_y = graph.vs[ dst_vid ][ "process_id" ]
         line = [ ( src_x, src_y ), ( dst_x, dst_y ) ]
         if src_pid == dst_pid:
             program_order_lines.append( line )
@@ -144,6 +167,11 @@ def visualize( graph, barrier_adjustment=False ):
     barrier_collection = PatchCollection( barrier_patches, facecolor="black", zorder=10 )
     send_collection = PatchCollection( send_patches, facecolor="blue", zorder=10 )
     recv_collection = PatchCollection( recv_patches, facecolor="red", zorder=10 )
+    wait_collection = PatchCollection( wait_patches, facecolor="teal", zorder=10 )
+    waitall_collection = PatchCollection( waitall_patches, facecolor="purple", zorder=10 )
+    waitany_collection = PatchCollection( waitany_patches, facecolor="orange", zorder=10 )
+    waitsome_collection = PatchCollection( waitsome_patches, facecolor="brown", zorder=10 )
+    ibarrier_collection = PatchCollection( ibarrier_patches, facecolor="magenta", zorder=10 )
     misc_collection = PatchCollection( misc_patches, facecolor="green", zorder=10 )
 
     # Create line collections for each kind of edge
@@ -188,6 +216,11 @@ def visualize( graph, barrier_adjustment=False ):
     #ax.add_collection( barrier_collection )
     ax.add_collection( send_collection )
     ax.add_collection( recv_collection )
+    ax.add_collection( wait_collection )
+    ax.add_collection( waitall_collection )
+    ax.add_collection( waitany_collection )
+    ax.add_collection( waitsome_collection )
+    ax.add_collection( ibarrier_collection )
     ax.add_collection( misc_collection )
 
     ax.add_collection( program_order_edge_collection )

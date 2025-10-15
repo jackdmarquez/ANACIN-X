@@ -5,6 +5,17 @@ import multiprocessing as mp
 import psutil
 import igraph
 import numpy as np
+import pathlib
+import sys
+
+try:
+    from ..utilities import normalize_event_types
+except ImportError:
+    parent_dir = pathlib.Path(__file__).resolve().parents[1]
+    parent_dir_str = str(parent_dir)
+    if parent_dir_str not in sys.path:
+        sys.path.append(parent_dir_str)
+    from utilities import normalize_event_types
 
 # Silence warnings from igraph
 import warnings
@@ -13,10 +24,10 @@ warnings.filterwarnings("ignore", module="igraph")
 # A simple decorator for timing function calls
 def timer(f):
     @wraps(f)
-    def wrapper(*args, **kwargs):                                                  
-        start = time()                                                             
-        result = f(*args, **kwargs)                                                
-        end = time()                                                               
+    def wrapper(*args, **kwargs):
+        start = time()
+        result = f(*args, **kwargs)
+        end = time()
         print("{} - Elapsed time: {}".format(f, end-start))
         return result                                                              
     return wrapper
@@ -30,13 +41,14 @@ def read_run_params( run_params_path ):
 #@timer
 def read_graph( graph_path ):
     graph = igraph.read( graph_path )
+    normalize_event_types( graph )
     return graph
 
 def read_graphs_serial( graph_paths ):
     return [ read_graph(p) for p in graph_paths ]
 
 def read_graph_task( graph_path ):
-    graph = igraph.read( graph_path )
+    graph = read_graph( graph_path )
     return (graph_path, graph)
 
 def read_graphs_parallel( graph_paths, return_sorted=False ):
